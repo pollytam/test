@@ -37,7 +37,43 @@ def get_origins():
     return jsonify(list(data))
     # return jsonify(data)
 
+@app.route("/test", methods=["POST", "GET"])
+def test():
+    jsonFromAjax = request.get_json()
 
+    # test = request.get_json()
+    # print(test["test"])
+    
+    # return "hello ajax"
+    # print(request.args)
+
+    data = pd.read_csv("revised_flight_latlng.csv")
+    dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
+
+    # print(data.loc[data['Year'] == jsonFromAjax["Year"]])
+    newData = data[ ["Year","Quarter","Origin","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
+    sortByYear = newData.loc[newData['Year'] == int(jsonFromAjax["year"]) ]
+    sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == int(jsonFromAjax["quarter"]) ]
+    sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == (jsonFromAjax["city"]) ]
+
+    print(sortByOrigin["Origin Lat","Origin Lng","Destination Lat","Destination Lng"])
+    originLat = sortByOrigin["Origin Lat"]
+    originLng = sortByOrigin["Origin Lng"]
+    destLat = sortByOrigin["Destination Lat"]
+    destLng = sortByOrigin["Destination Lng"]
+    # print(newData)
+
+    print()
+    # print(dataAll)
+
+    testcoords = [
+                {"lat": originLat, "lng": originLng},
+                {"lat": destLat, "lng": destLng}
+            ],
+
+    # return jsonify(testcoords)
+
+    return jsonify(testcoords)
 
 # @app.route('/get_coord', methods=["POST", "GET"])
 # def get_coord():
@@ -67,7 +103,7 @@ def get_origins():
     # 
     # 
 
-    return jsonify("123")
+    # return jsonify("123")
 
 if __name__ == "__main__":
     app.run(debug=True)
