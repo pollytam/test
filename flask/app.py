@@ -51,30 +51,61 @@ def test():
     dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
 
     # print(data.loc[data['Year'] == jsonFromAjax["Year"]])
-    newData = data[ ["Year","Quarter","Origin","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
+    newData = data[ ["Year","Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
     sortByYear = newData.loc[newData['Year'] == int(jsonFromAjax["year"]) ]
     sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == int(jsonFromAjax["quarter"]) ]
     sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == (jsonFromAjax["city"]) ]
 
-    print(sortByOrigin["Origin Lat","Origin Lng","Destination Lat","Destination Lng"])
-    originLat = sortByOrigin["Origin Lat"]
-    originLng = sortByOrigin["Origin Lng"]
-    destLat = sortByOrigin["Destination Lat"]
-    destLng = sortByOrigin["Destination Lng"]
+    coords_All=[]
+ 
+    for i, row in sortByOrigin.iterrows():
+        coords=[]
+        originCoords = {"lat": row['Origin Lat'], 
+                        "lng": row['Origin Lng']
+                        }
+        destCoords = {"lat": row['Destination Lat'], 
+                        "lng": row['Destination Lng']
+                        }
+
+        coords.append(originCoords)
+        coords.append(destCoords)
+
+        coords_All.append(coords)
+
+
+        # print(destCoords)
+
+        # print({lat: 7.8731, lng: 80.7718, slide: 'RIGHT_ROUND'})
+        # print(row['Origin Lat',"Origin Lng","Destination Lat", "Destination Lng"])
+
     # print(newData)
 
-    print()
+    # print()
     # print(dataAll)
-
-    testcoords = [
-                {"lat": originLat, "lng": originLng},
-                {"lat": destLat, "lng": destLng}
-            ],
 
     # return jsonify(testcoords)
 
-    return jsonify(testcoords)
+    return jsonify(coords_All)
 
+@app.route("/price", methods=["POST", "GET"])
+def price():
+    jsonObj = {
+            "quarter": 1,
+            "year": 2016,
+            "city": "Tulsa, OK"}
+
+    data = pd.read_csv("revised_flight_latlng.csv")
+    dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
+
+    # print(data.loc[data['Year'] == jsonFromAjax["Year"]])
+    newData = data[ ["Year","Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
+    sortByYear = newData.loc[newData['Year'] == jsonObj["year"] ]
+    sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == jsonObj["quarter"] ]
+    sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == jsonObj["city"] ]
+    destPrice = sortByOrigin['Fare']
+
+    print(destPrice)
+    return ""
 # @app.route('/get_coord', methods=["POST", "GET"])
 # def get_coord():
 

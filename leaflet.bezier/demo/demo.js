@@ -113,6 +113,8 @@ $(function () {
                 console.log(result)
                 reloadMap(map, result)
                 }
+
+        
         });
     })
 
