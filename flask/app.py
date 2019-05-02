@@ -67,10 +67,13 @@ def test():
                         "lng": row['Destination Lng']
                         }
 
+        
         coords.append(originCoords)
         coords.append(destCoords)
 
         coords_All.append(coords)
+
+        
 
 
         # print(destCoords)
@@ -92,7 +95,7 @@ def price():
     jsonObj = {
             "quarter": 1,
             "year": 2016,
-            "city": "Tulsa, OK"}
+            "city": "Houston, TX"}
 
     data = pd.read_csv("revised_flight_latlng.csv")
     dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
@@ -102,10 +105,25 @@ def price():
     sortByYear = newData.loc[newData['Year'] == jsonObj["year"] ]
     sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == jsonObj["quarter"] ]
     sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == jsonObj["city"] ]
-    destPrice = sortByOrigin['Fare']
+    
+    print(sortByOrigin)
+    dest=[] 
 
-    print(destPrice)
-    return ""
+    for p, row in sortByOrigin.iterrows():
+
+
+        priceDest=[]
+        price = row['Fare']
+        destCoords = {"lat": row['Destination Lat'], 
+                        "lng": row['Destination Lng']
+                        }
+        print(price)
+        priceDest.append(price)
+        priceDest.append(destCoords)
+        dest.append(priceDest)
+
+        # print(price)
+    return jsonify(dest)
 # @app.route('/get_coord', methods=["POST", "GET"])
 # def get_coord():
 

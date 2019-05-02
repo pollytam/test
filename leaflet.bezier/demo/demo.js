@@ -112,6 +112,19 @@ $(function () {
                 // console.log(status)
                 console.log(result)
                 reloadMap(map, result)
+                $.ajax({
+                    type:"POST",    
+                    url: "http://localhost:5000/price",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(jsonObj),
+                        success: function(result, status){
+                        // $("#div1").html(result);
+                        console.log("@2nd ajax")
+                        console.log(result)                    
+                        }
+        
+                
+                });
                 }
 
         
