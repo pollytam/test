@@ -106,7 +106,7 @@ let Bezier = L.Path.extend({
         let last_step = 0;
 
 
-        Snap.animate(0, forth_path_length, function (step) {
+        Snap.animate(0, forth_path_length/12, function (step) {
 
             //show image when plane start to animate
             spaceship_img.attr({
@@ -125,9 +125,9 @@ let Bezier = L.Path.extend({
 
             spaceship.transform('translate(' + x + ',' + y + ') rotate(' + (moveToPoint.alpha - 90) + ', ' + width / 2 + ', ' + height / 2 + ')');
 
-        }, 2500, mina.easeout, function () {
+        }, 500, mina.easeout, function () {
 
-            Snap.animate(forth_path_length, half_path_length, function (step) {
+            Snap.animate(forth_path_length/12, full_path_length, function (step) {
 
                 last_step = step;
                 let moveToPoint = Snap.path.getPointAtLength(flight_path, step);
@@ -135,7 +135,7 @@ let Bezier = L.Path.extend({
                 let x = moveToPoint.x - width / 2;
                 let y = moveToPoint.y - height / 2;
                 spaceship.transform('translate(' + x + ',' + y + ') rotate(' + (moveToPoint.alpha - 90) + ', ' + width / 2 + ', ' + height / 2 + ')');
-            }, 7000, mina.easein, function () {
+            }, 3000, mina.easein, function () {
                 //done
 
             });

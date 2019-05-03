@@ -37,24 +37,22 @@ def get_origins():
     return jsonify(list(data))
     # return jsonify(data)
 
-@app.route("/test", methods=["POST", "GET"])
-def test():
-    jsonFromAjax = request.get_json()
-
-    # test = request.get_json()
-    # print(test["test"])
-    
-    # return "hello ajax"
-    # print(request.args)
-
+def getFilteredDF(jsonFromAjax):
     data = pd.read_csv("revised_flight_latlng.csv")
-    dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
+    dataAll = data[["Year", "Quarter","Origin","Destination","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
 
-    # print(data.loc[data['Year'] == jsonFromAjax["Year"]])
-    newData = data[ ["Year","Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
+    newData = data[ ["Year","Quarter","Origin","Destination","Fare","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
     sortByYear = newData.loc[newData['Year'] == int(jsonFromAjax["year"]) ]
     sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == int(jsonFromAjax["quarter"]) ]
     sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == (jsonFromAjax["city"]) ]
+
+    return sortByOrigin
+
+@app.route("/test", methods=["POST", "GET"])
+def test():
+    jsonFromAjax = request.get_json()
+   
+    sortByOrigin = getFilteredDF(jsonFromAjax)
 
     coords_All=[]
  
@@ -73,86 +71,35 @@ def test():
 
         coords_All.append(coords)
 
-        
-
-
-        # print(destCoords)
-
-        # print({lat: 7.8731, lng: 80.7718, slide: 'RIGHT_ROUND'})
-        # print(row['Origin Lat',"Origin Lng","Destination Lat", "Destination Lng"])
-
-    # print(newData)
-
-    # print()
-    # print(dataAll)
-
-    # return jsonify(testcoords)
-
     return jsonify(coords_All)
 
-@app.route("/price", methods=["POST", "GET"])
+@app.route("/get_prices", methods=["POST", "GET"])
 def price():
-    jsonObj = {
-            "quarter": 1,
-            "year": 2016,
-            "city": "Houston, TX"}
 
-    data = pd.read_csv("revised_flight_latlng.csv")
-    dataAll = data[["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]]
+    jsonFromAjax = request.get_json()
+   
+    sortByOrigin = getFilteredDF(jsonFromAjax)
 
-    # print(data.loc[data['Year'] == jsonFromAjax["Year"]])
-    newData = data[ ["Year","Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat", "Destination Lng"] ]
-    sortByYear = newData.loc[newData['Year'] == jsonObj["year"] ]
-    sortByQuarter = sortByYear.loc[sortByYear['Quarter'] == jsonObj["quarter"] ]
-    sortByOrigin = sortByQuarter.loc[sortByQuarter['Origin'] == jsonObj["city"] ]
-    
-    print(sortByOrigin)
-    dest=[] 
+    dest=[]
 
     for p, row in sortByOrigin.iterrows():
-
 
         priceDest=[]
         price = row['Fare']
         destCoords = {"lat": row['Destination Lat'], 
                         "lng": row['Destination Lng']
                         }
-        print(price)
+        destination = row['Destination']
+        # print(price)
         priceDest.append(price)
         priceDest.append(destCoords)
+        priceDest.append(destination)
+    
         dest.append(priceDest)
 
         # print(price)
     return jsonify(dest)
-# @app.route('/get_coord', methods=["POST", "GET"])
-# def get_coord():
 
-#     select= request.data
-#     print(select)
-
-    # data = pd.read_csv("revised_flight_latlng.csv")
-    # print(data[ ["Year", "Quarter"] ].to_json( orient ="index"))
-
-
-    # print(data["Year"])
-    # return jsonify(data.loc[:, ["Year","Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"]])
-    # return json.dumps(data.loc[ :, ["Year", "Quarter"] ])
-    # print("hello")
-    # return data[ ["Year", "Quarter","Origin","Fare","Origin Lat","Origin Lng","Destination Lat","Destination Lng"] ].to_json( orient ="index")
-    # return select
-
-# @app.route('/quarter', methods=['GET', 'POST'])
-# def quarter():
-#     select = request.form['form']
-    # select= request.data
-    # print(request.form.namedItem() )
-    # print(select)
-    # print("QUERTER ROUTE")
-    # sort using request.data 
-    # 
-    # 
-
-    # return jsonify("123")
 
 if __name__ == "__main__":
     app.run(debug=True)
